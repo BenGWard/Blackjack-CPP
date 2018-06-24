@@ -81,9 +81,15 @@ private:
 public:
 	handOfCards()
 	{
+		clear();
+		srand(time(NULL));
+	}
+
+	//clears the hand to play again
+	void clear()
+	{
 		head = NULL;
 		end = NULL;
-		srand(time(NULL));
 	}
 
 	//deals a new card on the hand
@@ -190,7 +196,7 @@ public:
 		int handValue = value();
 		bool aces = hasAces();
 		
-		if (handValue < 17 && !aces)
+		if (handValue < 17)
 			this->draw();
 		else if (handValue == 17 && aces)
 			this->draw();
@@ -202,58 +208,110 @@ int main()
 	handOfCards *player = new handOfCards();
 	handOfCards *dealer = new handOfCards();
 	bool gameOver = false;
+	bool gotBlackjack = false;
+	char playAgain;
 	char hitOrStay;
 
-	//deal first two cards to player and dealer
-	for (int i = 0; i < 2; i++)
-	{
-		player->draw();
-		dealer->draw();
-	}
+	cout << "Casino Blackjack" << endl;
+	cout << "Dealer hits on soft 17" << endl << endl;
 
-	//check for blackjack
-	if (player->isBlackjack())
+	do
 	{
-		gameOver = true;
-		cout << "You got blackjack! You won!" << endl;
-	}
-	else if (dealer->isBlackjack())
-	{
-		gameOver = true;
-		cout << "Dealer got blackjack. You lost." << endl;
-	}
-
-	while (!gameOver)
-	{
-		dealer->print(true);
-		player->print(false);
-
-		do
-		{
-			cout << "Do you want to hit or stay? [H / S]:";
-			cin >> hitOrStay;
-			if (tolower(hitOrStay) != 'h' && tolower(hitOrStay) != 's')
-				cout << "Please enter H or S." << endl;
-		} while (tolower(hitOrStay) != 'h' && tolower(hitOrStay) != 's');
-
-		if (tolower(hitOrStay) == 'h')
+		//deal first two cards to player and dealer
+		for (int i = 0; i < 2; i++)
 		{
 			player->draw();
-			dealer->dealerPlay();
+			dealer->draw();
 		}
-		else
+
+		//check for blackjack
+		if (player->isBlackjack())
 		{
-			dealer->dealerPlay();
+			cout << "You got blackjack! You won!" << endl;
 			gameOver = true;
+			gotBlackjack = true;
 		}
-	}
+		else if (dealer->isBlackjack())
+		{
+			cout << "Dealer got blackjack. You lost." << endl;
+			gameOver = true;
+			gotBlackjack = true;
+		}
 
-	cout << "Final results:" << endl; 
-	cout << "Dealer: " << dealer->value() << endl;
-	cout << "Player: " << player->value();
+		while (!gameOver)
+		{
+			cout << "Dealer:\t";
+			dealer->print(true);
+			cout << "Player:\t";
+			player->print(false);
 
-	system("pause");
+			do
+			{
+				cout << "Do you want to hit or stay? [H / S]:";
+				cin >> hitOrStay;
+				if (tolower(hitOrStay) != 'h' && tolower(hitOrStay) != 's')
+					cout << "Please enter H or S." << endl;
+			} while (tolower(hitOrStay) != 'h' && tolower(hitOrStay) != 's');
 
+			if (tolower(hitOrStay) == 'h')
+			{
+				player->draw();
+				dealer->dealerPlay();
+			}
+			else
+			{
+				dealer->dealerPlay();
+				gameOver = true;
+			}
+		}
+
+		//if player or dealer got a blackjack, game was already decided
+		if (!gotBlackjack)
+		{
+			//report final card totals
+			cout << endl << "Final results:" << endl << endl;
+			cout << "Dealer: " << dealer->value() << endl;
+			dealer->print(false);
+			cout << endl;
+			cout << "Player: " << player->value() << endl;;
+			player->print(false);
+			cout << endl;
+
+			//declare winner
+			if (player->isBlackjack())
+				cout << "You got blackjack! You won!" << endl;
+			else if (dealer->isBlackjack())
+				cout << "Dealer got blackjack. You lost." << endl;
+			else if (player->value() > 21)
+				cout << "You bust. You lose." << endl;
+			else if (dealer->value() > 21)
+				cout << "Dealer bust. You won!" << endl;
+			else if (player->value() == dealer->value())
+				cout << "Draw." << endl;
+			else if (player->value() > dealer->value())
+				cout << "You won!" << endl;
+			else
+				cout << "You lost." << endl;
+		}
+
+		//ask if they want to play again
+		do
+		{
+			cout << endl << "Do you want to play again? [Y/N]";
+			cin >> playAgain;
+			if (tolower(playAgain) != 'y' && tolower(playAgain) != 'n')
+				cout << "Please enter H or S." << endl;
+		} while (tolower(playAgain) != 'y' && tolower(playAgain) != 'n');
+
+		//if playing again, reset hands and gameover
+		if (tolower(playAgain) == 'y')
+		{
+			player->clear();
+			dealer->clear();
+			gameOver = false;
+		}
+	} while (tolower(playAgain) == 'y');
+	
     return 0;
 }
 

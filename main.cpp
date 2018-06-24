@@ -257,17 +257,16 @@ int main()
 			if (tolower(hitOrStay) == 'h')
 			{
 				player->draw();
-				dealer->dealerPlay();
 
 				if (player->value() > 21)
 					gameOver = true;
 			}
 			else
-			{
-				dealer->dealerPlay();
 				gameOver = true;
-			}
 		}
+
+		//dealer plays his turn
+		dealer->dealerPlay();
 
 
 		//report final card totals

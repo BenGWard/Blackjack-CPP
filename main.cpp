@@ -1,5 +1,6 @@
 //Blackjack - C++
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 
@@ -26,6 +27,15 @@ private:
 	card *end;
 	bool isDealer;
 
+	card *newCard()
+	{
+		card *temp;
+		temp = new card();
+		temp->link = NULL;
+		srand(time(NULL));
+		temp->value = (rand() % 13) + 1;
+	}
+
 public:
 	handOfCards(bool isDealer)
 	{
@@ -34,9 +44,58 @@ public:
 		isDealer = isDealer;
 	}
 
-	//use linked list for hand of cards
-	// random number generator with new card
+	//deals a new card on the hand
+	void deal()
+	{
+		card *temp;
+		temp = newCard();
+
+		if (head == NULL)
+		{
+			head = temp;
+			end = temp;
+		}
+		else
+		{
+			end->link = temp;
+			end = temp;
+		}
+	}
+
+	//adds up the hand
+	int handValue()
+	{
+		int value = 0;
+		card *cur = head;
+
+		while (cur)
+		{
+			value += cur->value;
+			cur = cur->link;
+		}
+
+		return value;
+	}
+
 	//print function with flag on whether or not to print dealer first card
+	void printHand(bool isDealer)
+	{
+		card *cur = head;
+		int cardNum = 1;
+
+		while (cur)
+		{
+			if (cardNum == 1 && isDealer)
+				cout << "*\t";
+			else
+				cout << cur->value << '\t';
+
+			cur = cur->link;
+			cardNum++;
+		}
+
+		cout << endl;
+	}
 };
 
 int main()

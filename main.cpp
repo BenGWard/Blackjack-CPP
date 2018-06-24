@@ -13,9 +13,34 @@ enum FaceCards
 	KING = 13
 };
 
+ostream &operator<<(ostream &outs, FaceCards card)
+{
+	switch (card)
+	{
+	case ACE:
+		outs << "Ace";
+		break;
+	case JACK:
+		outs << "Jack";
+		break;
+	case QUEEN:
+		outs << "Queen";
+		break;
+	case KING:
+		outs << "King";
+		break;
+	default:
+		outs << static_cast<int>(card);
+		break;
+	}
+
+	return outs;
+}
+
 class card
 {
 public:
+	int type;
 	int value;
 	card *link;
 };
@@ -25,27 +50,43 @@ class handOfCards
 private:
 	card *head;
 	card *end;
-	bool isDealer;
 
 	card *newCard()
 	{
 		card *temp;
 		temp = new card();
 		temp->link = NULL;
-		srand(time(NULL));
-		temp->value = (rand() % 13) + 1;
+		temp->type = (rand() % 13) + 1;
+		assignValue(temp);
+		return temp;
+	}
+
+	int assignValue(card *temp)
+	{
+		int val;
+		FaceCards tempType;
+		tempType = static_cast<FaceCards>(temp->type);
+
+		//assign value of 10 to jack, queen, king
+		//everyone else just gets their card type (1-10)
+		if (tempType == JACK || tempType == QUEEN || tempType == KING)
+			val = 10;
+		else
+			val = temp->type;
+
+		return val;
 	}
 
 public:
-	handOfCards(bool isDealer)
+	handOfCards()
 	{
 		head = NULL;
 		end = NULL;
-		isDealer = isDealer;
+		srand(time(NULL));
 	}
 
 	//deals a new card on the hand
-	void deal()
+	void draw()
 	{
 		card *temp;
 		temp = newCard();
@@ -78,17 +119,16 @@ public:
 	}
 
 	//print function with flag on whether or not to print dealer first card
-	void print(bool isDealer)
+	void print(bool hideDealerCard)
 	{
 		card *cur = head;
 		int cardNum = 1;
-
 		while (cur)
 		{
-			if (cardNum == 1 && isDealer)
+			if (cardNum == 1 && hideDealerCard)
 				cout << "*\t";
 			else
-				cout << cur->value << '\t';
+				cout << static_cast<FaceCards>(cur->type) << '\t';
 
 			cur = cur->link;
 			cardNum++;
@@ -96,10 +136,24 @@ public:
 
 		cout << endl;
 	}
+
+	//bool isBlackjack
+
+	//bool hasAces
 };
 
 int main()
 {
+	bool playertype = false;
+	handOfCards player = new handOfCards(playertype);
+
+	for (int i = 0; i < 100; i++)
+		player.draw();
+
+	player.print(false);
+
+	system("pause");
+
     return 0;
 }
 

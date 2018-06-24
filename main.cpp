@@ -167,7 +167,7 @@ public:
 		int handValue = head->value + end->value;
 		
 		//if the hand is a face card or ten and an ace, the value will be 11
-		if (handValue == 11)
+		if (handValue == 11 && (head->value == 10 || end->value == 10))
 			blackjack = true;
 
 		return blackjack;
@@ -196,10 +196,11 @@ public:
 		int handValue = value();
 		bool aces = hasAces();
 		
-		if (handValue < 17)
+		while (handValue < 17 || (handValue == 17 && aces))
+		{
 			this->draw();
-		else if (handValue == 17 && aces)
-			this->draw();
+			handValue = value();
+		}
 	}
 };
 
@@ -247,7 +248,7 @@ int main()
 
 			do
 			{
-				cout << "Do you want to hit or stay? [H / S]:";
+				cout << "Do you want to hit or stay? [H/S]:";
 				cin >> hitOrStay;
 				if (tolower(hitOrStay) != 'h' && tolower(hitOrStay) != 's')
 					cout << "Please enter H or S." << endl;
@@ -257,6 +258,9 @@ int main()
 			{
 				player->draw();
 				dealer->dealerPlay();
+
+				if (player->value() > 21)
+					gameOver = true;
 			}
 			else
 			{
@@ -265,24 +269,21 @@ int main()
 			}
 		}
 
+
+		//report final card totals
+		cout << endl << "Final results:" << endl << endl;
+		cout << "Dealer: " << dealer->value() << endl;
+		dealer->print(false);
+		cout << endl;
+		cout << "Player: " << player->value() << endl;;
+		player->print(false);
+		cout << endl;
+
 		//if player or dealer got a blackjack, game was already decided
 		if (!gotBlackjack)
 		{
-			//report final card totals
-			cout << endl << "Final results:" << endl << endl;
-			cout << "Dealer: " << dealer->value() << endl;
-			dealer->print(false);
-			cout << endl;
-			cout << "Player: " << player->value() << endl;;
-			player->print(false);
-			cout << endl;
-
 			//declare winner
-			if (player->isBlackjack())
-				cout << "You got blackjack! You won!" << endl;
-			else if (dealer->isBlackjack())
-				cout << "Dealer got blackjack. You lost." << endl;
-			else if (player->value() > 21)
+			if (player->value() > 21)
 				cout << "You bust. You lose." << endl;
 			else if (dealer->value() > 21)
 				cout << "Dealer bust. You won!" << endl;
@@ -309,6 +310,7 @@ int main()
 			player->clear();
 			dealer->clear();
 			gameOver = false;
+			gotBlackjack = false;
 		}
 	} while (tolower(playAgain) == 'y');
 	

@@ -63,7 +63,7 @@ public:
 	}
 
 	//adds up the hand
-	int handValue()
+	int value()
 	{
 		int value = 0;
 		card *cur = head;
@@ -78,7 +78,7 @@ public:
 	}
 
 	//print function with flag on whether or not to print dealer first card
-	void printHand(bool isDealer)
+	void print(bool isDealer)
 	{
 		card *cur = head;
 		int cardNum = 1;

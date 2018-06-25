@@ -81,13 +81,26 @@ private:
 public:
 	handOfCards()
 	{
-		clear();
+		head = NULL;
+		end = NULL;
 		srand(time(NULL));
 	}
 
 	//clears the hand to play again
-	void clear()
+	void clearList()
 	{
+		card *temp;
+		card *old;
+
+		temp = head;
+
+		while (temp)
+		{
+			old = temp;
+			temp = temp->link;
+			delete old;
+		}
+
 		head = NULL;
 		end = NULL;
 	}
@@ -306,8 +319,8 @@ int main()
 		//if playing again, reset hands and gameover
 		if (tolower(playAgain) == 'y')
 		{
-			player->clear();
-			dealer->clear();
+			player->clearList();
+			dealer->clearList();
 			gameOver = false;
 			gotBlackjack = false;
 		}
